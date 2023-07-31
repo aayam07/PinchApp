@@ -16,7 +16,18 @@ struct ContentView: View {
     // to store the actual value of the image scale for double tap gesture
     @State private var imageScale: CGFloat = 1
     
-    //MARK: - FUNCTION
+    // to change the image offset during image drag gesture
+    @State private var imageOffset: CGSize = .zero  // sets width and height both zero
+    
+    //MARK: - FUNCTION (MEHTODS)
+    
+    // to avoid repetition of bring back image offset and scale to default values
+    func resetImageState() {
+        return withAnimation(.spring()) {
+            imageScale = 1  // to bring back to original scale value
+            imageOffset = .zero  // back to original position
+        }
+    }
     
     //MARK: - CONTENT
     
@@ -33,6 +44,7 @@ struct ContentView: View {
                     .padding()
                     .shadow(color: .black.opacity(0.2), radius: 12, x: 2, y: 2)
                     .opacity(isAnimating ? 1 : 0)
+                    .offset(x: imageOffset.width, y: imageOffset.height)  // modifier position matters
                     .animation(.linear(duration: 1), value: isAnimating)
                     .scaleEffect(imageScale, anchor: .center)
                 //MARK: - DOUBLE TAP ZOOM GESTURE
@@ -42,12 +54,30 @@ struct ContentView: View {
                                 imageScale = 5  // scale up
                             }
                         } else {
-                            withAnimation(.spring()) {
-                                imageScale = 1  // back to default scale value
-                            }
+                            resetImageState()
                         }
                     }
-            }
+                //MARK: - IMAGE DRAG GESTURE
+                    .gesture(
+                        DragGesture()
+                            .onChanged({ value in
+                                
+                                // to provide smooth drag
+                                withAnimation(.linear(duration: 1)) {
+                                    imageOffset = value.translation  // stores the translation width and height value of image
+                                }
+//                                print(imageOffset.width)
+                            })
+                            .onEnded({ _ in
+                                // to bring back image to the original position after drag ends (only when the image is not sclaed up or zoomed
+                                if imageScale <= 1 {
+                                    resetImageState()
+                                }
+                                
+                            })
+                    )
+                
+            }  //: ZSTACK
             .navigationTitle("Pinch & Zoom")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
@@ -56,9 +86,6 @@ struct ContentView: View {
             
         }  //: NAVAGATION
         .navigationViewStyle(.stack)  // to avoid using side bar on iPad devices
-        
-        
-        
         
     }
     
