@@ -35,6 +35,9 @@ struct ContentView: View {
         NavigationView {
             ZStack {
                 
+                // to make Zstack occupy the whole screen, we put specific view under other layers in this ZStack
+                Color.clear  // to move the circle symbol to the top of view
+                
                 //MARK: - PAGE IMAGE
                 
                 Image("magazine-front-cover")
@@ -83,6 +86,13 @@ struct ContentView: View {
             .onAppear {
                 isAnimating = true
             }
+            //MARK: - INFO PANNEL
+            .overlay(
+                InfoPannelView(scale: imageScale, offset: imageOffset)
+                    .padding(.horizontal)
+                    .padding(.top, 30)
+                , alignment: .top
+            )
             
         }  //: NAVAGATION
         .navigationViewStyle(.stack)  // to avoid using side bar on iPad devices
@@ -94,5 +104,6 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+//            .preferredColorScheme(.dark)
     }
 }
