@@ -48,7 +48,7 @@ struct ContentView: View {
                     .shadow(color: .black.opacity(0.2), radius: 12, x: 2, y: 2)
                     .opacity(isAnimating ? 1 : 0)
                     .offset(x: imageOffset.width, y: imageOffset.height)  // modifier position matters
-                    .animation(.linear(duration: 1), value: isAnimating)
+//                    .animation(.linear(duration: 1), value: isAnimating)
                     .scaleEffect(imageScale, anchor: .center)
                 //MARK: - DOUBLE TAP ZOOM GESTURE
                     .onTapGesture(count: 2) {
@@ -84,14 +84,75 @@ struct ContentView: View {
             .navigationTitle("Pinch & Zoom")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
-                isAnimating = true
+                withAnimation(.linear(duration: 1)) {
+                    isAnimating = true
+                }
+                
             }
             //MARK: - INFO PANNEL
             .overlay(
                 InfoPannelView(scale: imageScale, offset: imageOffset)
                     .padding(.horizontal)
                     .padding(.top, 30)
-                , alignment: .top
+                , alignment: .top  // top of ZStack
+            )
+            
+            //MARK: - CONTROLS
+            .overlay (
+                Group {
+                    HStack {
+                        
+                        // SCALE DOWN
+                        Button {
+                            // some action
+                            withAnimation(.spring()) {
+                                if imageScale > 1 {
+                                    imageScale -= 1
+                                }
+                                
+                                // to ensure that image scale is never less than 1
+                                if imageScale <= 1 {
+                                    resetImageState()
+                                }
+                            }
+                        } label: {
+                            ControlImageView(icon: "minus.magnifyingglass")
+                        }
+                        
+                        //RESET
+                        Button {
+                            // some action
+                            resetImageState()
+                        } label: {
+                            ControlImageView(icon: "arrow.up.left.and.down.right.magnifyingglass")
+                        }
+
+                        //SCALE UP
+                        Button {
+                            // some action
+                            withAnimation(.spring()) {
+                                if imageScale < 5 {
+                                    imageScale += 1
+                                }
+                                
+                                // to ensure that image scale is never greater than 5
+                                if imageScale > 5 {
+                                    imageScale = 5
+                                }
+                            }
+                        } label: {
+                            ControlImageView(icon: "plus.magnifyingglass")
+                        }
+
+                    }  //: CONTROLS
+                    .padding(EdgeInsets(top: 12, leading: 20, bottom: 12, trailing: 20))
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(12)
+                    .opacity(isAnimating ? 1 : 0)
+                    
+                }
+                    .padding(.bottom, 30)
+                , alignment: .bottom  // bottom of ZSTACk
             )
             
         }  //: NAVAGATION
