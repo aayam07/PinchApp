@@ -50,7 +50,7 @@ struct ContentView: View {
                     .offset(x: imageOffset.width, y: imageOffset.height)  // modifier position matters
 //                    .animation(.linear(duration: 1), value: isAnimating)
                     .scaleEffect(imageScale, anchor: .center)
-                //MARK: - DOUBLE TAP ZOOM GESTURE
+                //MARK: - 1. DOUBLE TAP ZOOM GESTURE
                     .onTapGesture(count: 2) {
                         if imageScale == 1 {
                             withAnimation(.spring()) {
@@ -60,7 +60,7 @@ struct ContentView: View {
                             resetImageState()
                         }
                     }
-                //MARK: - IMAGE DRAG GESTURE
+                //MARK: - 2. IMAGE DRAG GESTURE
                     .gesture(
                         DragGesture()
                             .onChanged({ value in
@@ -72,11 +72,33 @@ struct ContentView: View {
 //                                print(imageOffset.width)
                             })
                             .onEnded({ _ in
-                                // to bring back image to the original position after drag ends (only when the image is not sclaed up or zoomed
+                                // to bring back image to the original position after drag ends (only when the image is not scaled up or zoomed
                                 if imageScale <= 1 {
                                     resetImageState()
                                 }
                                 
+                            })
+                    )
+                //MARK: - 3. MAGNIFICATION
+                    .gesture(
+                        MagnificationGesture()
+                            .onChanged { value in
+                                withAnimation(.linear(duration: 1)) {
+                                    if (imageScale >= 1 && imageScale <= 5) {
+                                        imageScale = value
+                                    } else if imageScale > 5 {
+                                        imageScale = 5
+                                    } else if imageScale < 1 {
+                                        resetImageState()
+                                    }
+                                }
+                            }
+                            .onEnded({ _ in
+                                if imageScale > 5 {
+                                    imageScale = 5
+                                } else if imageScale <= 1 {
+                                    resetImageState()
+                                }
                             })
                     )
                 
