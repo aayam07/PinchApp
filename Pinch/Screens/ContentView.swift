@@ -22,6 +22,12 @@ struct ContentView: View {
     // to store the actual state of the drawer
     @State private var isDrawerOpen: Bool = false  // drawer closed by default
     
+    // to use page data and model and populate the drawer with Thumbnails
+    let pages: [Page] = pagesData
+    
+    // index of the actual image we want to show on the screen
+    @State private var pageIndex: Int = 1  // starting from 1 as ID starts from 1
+    
     //MARK: - FUNCTION (MEHTODS)
     
     // to avoid repetition of bring back image offset and scale to default values
@@ -30,6 +36,11 @@ struct ContentView: View {
             imageScale = 1  // to bring back to original scale value
             imageOffset = .zero  // back to original position
         }
+    }
+    
+    // to display the first page and simpify the code in first main Image view
+    func currentPage() -> String {
+        return pages[pageIndex - 1].imageName
     }
     
     //MARK: - CONTENT
@@ -43,7 +54,7 @@ struct ContentView: View {
                 
                 //MARK: - PAGE IMAGE
                 
-                Image("magazine-front-cover")
+                Image(currentPage())
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .cornerRadius(10)
@@ -196,6 +207,22 @@ struct ContentView: View {
                         }
                     
                     //MARK: - THUMBNAILS
+                    ForEach(pages) { page in
+                        Image(page.thumbnailName)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 80)
+                            .cornerRadius(8)
+                            .shadow(radius: 4)
+                            .opacity(isDrawerOpen ? 1 : 0)
+                            .animation(.easeOut(duration: 0.5), value: isDrawerOpen)
+                            .onTapGesture(count: 1) {
+//                                isAnimating = true
+                                pageIndex = page.id  // change main image on tap to image with a particular id
+                            }
+                        
+                    }
+                    
                     Spacer()
                     
                 }) //: DRAWER
