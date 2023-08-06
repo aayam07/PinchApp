@@ -19,6 +19,9 @@ struct InfoPannelView: View {
     // mutable (changable) variable to store the actual state (shown or hidden) of this info pannel
     @State private var isInfoPannelVisible: Bool = false  // hidden by default
     
+    // property that confirms to HEPTIC feedback generator prototype
+    let hepticFeedback = UINotificationFeedbackGenerator()
+    
     
     var body: some View {
         HStack {
@@ -30,6 +33,7 @@ struct InfoPannelView: View {
                 .onLongPressGesture(minimumDuration: 1) {
                     withAnimation(.easeOut) {
                         isInfoPannelVisible.toggle()
+                        hepticFeedback.notificationOccurred(.success)
                     }
                 }
             
