@@ -19,6 +19,9 @@ struct ContentView: View {
     // to change the image offset during image drag gesture
     @State private var imageOffset: CGSize = .zero  // sets width and height both zero
     
+    // to store the actual state of the drawer
+    @State private var isDrawerOpen: Bool = false  // drawer closed by default
+    
     //MARK: - FUNCTION (MEHTODS)
     
     // to avoid repetition of bring back image offset and scale to default values
@@ -175,6 +178,37 @@ struct ContentView: View {
                 }
                     .padding(.bottom, 30)
                 , alignment: .bottom  // bottom of ZSTACk
+            )
+            //MARK: - DRAWER
+            .overlay (
+                HStack(spacing: 12, content: {
+                    //MARK: - DRAWER HANDLE
+                    Image(systemName: isDrawerOpen ? "chevron.compact.right" : "chevron.compact.left")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 40)
+                        .padding(8)
+                        .foregroundColor(.secondary)
+                        .onTapGesture {
+                            withAnimation(.easeOut) {
+                                isDrawerOpen.toggle()  // false to true
+                            }
+                        }
+                    
+                    //MARK: - THUMBNAILS
+                    Spacer()
+                    
+                }) //: DRAWER
+//                    .background(Color.red)
+                    .padding(EdgeInsets(top: 16, leading: 8, bottom: 16, trailing: 8))
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(12)
+                    .opacity(isAnimating ? 1 : 0)
+                    .frame(width: 260)
+                    .padding(.top, UIScreen.main.bounds.height / 12)  // dynamic top padding to the drawer
+                    .offset(x: isDrawerOpen ? 20 : 215)
+                , alignment: .topTrailing
+
             )
             
         }  //: NAVAGATION
